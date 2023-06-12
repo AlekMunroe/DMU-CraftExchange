@@ -1,0 +1,248 @@
+/* Add desired styles for the homepage and basket interface */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  background-color: #f0f5f9;
+}
+
+header {
+  padding: 8px;
+  background-color: #2980b9;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+
+.logo {
+  margin-left: 10px;
+  color: #fff;
+}
+
+h1 {
+  text-align: center;
+}
+
+header button {
+  margin-left: auto;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+}
+
+main {
+  padding-top: 50px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 20px;
+  justify-items: center;
+  margin: 0 auto;
+  max-width: 1000px; /* Adjust the max-width as needed */
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.item img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.item.out-of-stock {
+  background-color: #eee;
+  opacity: 0.5;
+  pointer-events: none;
+  position: relative;
+}
+
+.out-of-stock-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: red;
+  color: white;
+  padding: 5px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 5px;
+  width: 100%;
+  z-index: 1;
+}
+
+.stock-amount {
+  margin-top: auto;
+  font-size: 12px;
+  color: #777;
+  text-align: center;
+}
+
+
+.notifications {
+  background-color: #2980b9; /* Update to desired lighter background color */
+  color: #333;
+  text-align: center;
+  padding: 10px;
+  max-width: 600px;
+  margin: 0 auto 20px; /* Add margin-bottom of 20px */
+  border: 2px solid #2980b9; /* Outline color */
+  border-radius: 10px; /* Rounded corners */
+}
+
+.notifications p {
+  margin: 0;
+  color: #fff;
+}
+
+
+
+
+
+
+
+
+.quantity-input {
+  margin-top: 10px;
+  width: 60px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 5px;
+}
+
+.basket {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+#close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ddd;
+  border: none;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#close-button:hover {
+  background-color: #ccc;
+}
+
+#basket-items {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#basket-total {
+  margin-top: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  display: none;
+}
+
+.basket-open {
+  display: block;
+}
+
+form {
+  margin-top: 20px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="number"],
+form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+
+form textarea {
+  height: 80px;
+}
+
+form input[type="submit"] {
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+  background-color: #1c6ea4;
+}
+
+.basket-icon {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 479px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
