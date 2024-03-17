@@ -96,14 +96,15 @@ function updateBasket(items) {
         }
     });
 
-    basketTotalElement.textContent = `Total Price: ${totalPrice}`;
+    basketTotalElement.textContent = `Total Price: ${totalPrice} Diamonds`;
 
     // Update the priceToPayInput and itemsField to reflect changes
     const priceToPayInput = document.getElementById('price-to-pay');
     const itemsField = document.getElementById('basket-items-field');
 
     if (priceToPayInput) {
-        priceToPayInput.value = totalPrice; // Assuming you want to display the total price
+        //priceToPayInput.value = totalPrice; // Assuming you want to display the total price
+        priceToPayInput.value = `${totalPrice} Diamonds`;
     }
 
     if (itemsField) {
@@ -112,11 +113,23 @@ function updateBasket(items) {
 }
 
 function submitForm() {
-    // Example submission logic, adapt as needed
-    const formData = {
-        // Gather your form data here
+    var minecraftUsername = document.getElementById('minecraft-username').value;
+    var discordUsername = document.getElementById('discord-username').value;
+    var itemCoordsLocation = document.getElementById('item-coords-location').value;
+    var itemPlanetLocation = document.getElementById('item-planet-location').value;
+    var priceToPay = document.getElementById('price-to-pay').value;
+    var additionalInformation = document.getElementById('additional-information').value;
+    var itemsField = document.getElementById('basket-items').textContent;
+
+    var payload = {
+        content: `-----\nNew Purchase!\nMinecraft Username: ${minecraftUsername}\nDiscord Username: ${discordUsername}\nCoords: ${itemCoordsLocation}\nPlanet: ${itemPlanetLocation}\nPrice: ${priceToPay} Diamonds\nItems: ${itemsField}\nAdditional Information: ${additionalInformation}`
     };
 
-    console.log('Submitting form data:', formData);
-    alert('Form submission simulated. Check console for details.');
+    var webhookUrl = 'https://discord.com/api/webhooks/1117130766413996103/WU74ngWkKCejLJDO5VciiYzjAS8QXxUTeONukPl-K53Ed5X8U6Zsbu7nvkBtqKOOPFu0'; // Add discord webhook link here
+    var request = new XMLHttpRequest();
+    request.open('POST', webhookUrl);
+    request.setRequestHeader('Content-type', 'application/json');
+    request.send(JSON.stringify(payload));
+
+    alert('Purchase Successful!');
 }

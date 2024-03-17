@@ -178,7 +178,6 @@ $items = $db->query("SELECT * FROM items ORDER BY order_num ASC")->fetchAll(PDO:
                             <button type="submit" name="move">Move Down</button>
                         </form>
                     </td>
-
                 </tr>
             <?php endforeach; ?>
         </tbody>
