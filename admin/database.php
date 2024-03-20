@@ -6,12 +6,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'admin' && $_SESSION[
     exit;
 }
 
-$dbPath = __DIR__ . '/items_database.db';
-$db = new PDO('sqlite:' . $dbPath);
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+require_once 'db_connect.php'; // Include the database connection file
+$db = getDbConnection(); // Get the database connection
 
+// Create the items table if it does not exist
 $db->exec("CREATE TABLE IF NOT EXISTS items (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     price INTEGER NOT NULL,
     currency TEXT NOT NULL,
@@ -25,50 +25,93 @@ $db->exec("CREATE TABLE IF NOT EXISTS items (
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add'])) {
-        $maxOrderNum = $db->query("SELECT MAX(order_num) FROM items")->fetchColumn();
-        $orderNum = $maxOrderNum !== false ? $maxOrderNum + 1 : 0;
+        // Add new item
+        $maxOrderNumQuery = $db->query("SELECT MAX(order_num) FROM items");
+        $maxOrderNum = $maxOrderNumQuery ? $maxOrderNumQuery->fetchColumn() : 0;
+        $orderNum = $maxOrderNum + 1;
 
         $stmt = $db->prepare("INSERT INTO items (name, price, currency, image, item_limit, instock, stockamount, showstockamount, order_num)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        // Before the execute call
+        $instock = isset($_POST['instock']) && $_POST['instock'] === '1' ? 'true' : 'false'; // Convert to text representation
+        $showstockamount = isset($_POST['showstockamount']) && $_POST['showstockamount'] === '1' ? 'true' : 'false'; // Convert to text representation
+
         $stmt->execute([
-            $_POST['name'], $_POST['price'], $_POST['currency'], $_POST['image'],
-            $_POST['item_limit'], $_POST['instock'] == '1', $_POST['stockamount'], $_POST['showstockamount'] == '1', $orderNum
+            $_POST['name'],
+            $_POST['price'],
+            $_POST['currency'],
+            $_POST['image'],
+            $_POST['item_limit'],
+            $instock, // Pass 'true' or 'false' as a string
+            $_POST['stockamount'],
+            $showstockamount, // Pass 'true' or 'false' as a string
+            $orderNum
         ]);
+
+
+
+
         header('Location: database.php');
         exit;
     } elseif (isset($_POST['delete'])) {
+        // Delete item
         $stmt = $db->prepare("DELETE FROM items WHERE id = ?");
         $stmt->execute([$_POST['id']]);
         header('Location: database.php');
         exit;
     } elseif (isset($_POST['move'])) {
+        // Move item up or down
         $id = $_POST['id'];
         $direction = $_POST['direction'];
-        $currentOrder = $db->query("SELECT order_num FROM items WHERE id = $id")->fetchColumn();
+        $currentOrderQuery = $db->prepare("SELECT order_num FROM items WHERE id = ?");
+        $currentOrderQuery->execute([$id]);
+        $currentOrder = $currentOrderQuery->fetchColumn();
         
         if ($direction == 'up') {
-            $swapItem = $db->query("SELECT id, order_num FROM items WHERE order_num < $currentOrder ORDER BY order_num DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+            $swapItemQuery = $db->prepare("SELECT id, order_num FROM items WHERE order_num < ? ORDER BY order_num DESC LIMIT 1");
         } else {
-            $swapItem = $db->query("SELECT id, order_num FROM items WHERE order_num > $currentOrder ORDER BY order_num ASC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+            $swapItemQuery = $db->prepare("SELECT id, order_num FROM items WHERE order_num > ? ORDER BY order_num ASC LIMIT 1");
         }
+        $swapItemQuery->execute([$currentOrder]);
+        $swapItem = $swapItemQuery->fetch(PDO::FETCH_ASSOC);
         
         if ($swapItem) {
-            $db->exec("UPDATE items SET order_num = {$swapItem['order_num']} WHERE id = $id");
-            $db->exec("UPDATE items SET order_num = $currentOrder WHERE id = {$swapItem['id']}");
+            $db->beginTransaction();
+            try {
+                $db->prepare("UPDATE items SET order_num = ? WHERE id = ?")->execute([$swapItem['order_num'], $id]);
+                $db->prepare("UPDATE items SET order_num = ? WHERE id = ?")->execute([$currentOrder, $swapItem['id']]);
+                $db->commit();
+            } catch (Exception $e) {
+                $db->rollBack();
+                echo "Failed to move item: " . $e->getMessage();
+                exit;
+            }
         }
         
         header('Location: database.php');
         exit;
     } elseif (isset($_POST['edit'])) {
-        $editId = $_POST['edit_id'];
-        $stmt = $db->prepare("UPDATE items SET name = ?, price = ?, currency = ?, image = ?, item_limit = ?, instock = ?, stockamount = ?, showstockamount = ? WHERE id = ?");
-        $stmt->execute([
-            $_POST['name'], $_POST['price'], $_POST['currency'], $_POST['image'],
-            $_POST['item_limit'], $_POST['instock'] == '1', $_POST['stockamount'], $_POST['showstockamount'] == '1', $editId
-        ]);
-        header('Location: database.php');
-        exit;
-    }
+    // Edit item
+    $instock = isset($_POST['instock']) && $_POST['instock'] === '1' ? 'true' : 'false'; // Correctly handle boolean
+    $showstockamount = isset($_POST['showstockamount']) && $_POST['showstockamount'] === '1' ? 'true' : 'false'; // Correctly handle boolean
+
+    $stmt = $db->prepare("UPDATE items SET name = ?, price = ?, currency = ?, image = ?, item_limit = ?, instock = ?, stockamount = ?, showstockamount = ? WHERE id = ?");
+    $stmt->execute([
+        $_POST['name'],
+        $_POST['price'],
+        $_POST['currency'],
+        $_POST['image'],
+        $_POST['item_limit'],
+        $instock, // Use the boolean value
+        $_POST['stockamount'],
+        $showstockamount, // Use the boolean value
+        $_POST['edit_id']
+    ]);
+    header('Location: database.php');
+    exit;
+}
+
 }
 
 $editItem = null;
@@ -182,5 +225,7 @@ $items = $db->query("SELECT * FROM items ORDER BY order_num ASC")->fetchAll(PDO:
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <a href="homepage.php">Back to homepage</a>
 </body>
 </html>

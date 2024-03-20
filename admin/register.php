@@ -1,19 +1,17 @@
 <?php
-// Register.php - Creates an initial admin account and ensures the users table exists.
+// Include the database connection file
+require_once 'db_connect.php';
 
-// Path to the SQLite database file
-$dbPath = __DIR__ . '/admin.db';
+// Get the database connection
+$db = getDbConnection();
 
 try {
-    $db = new PDO('sqlite:' . $dbPath);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     // Create the users table if it does not exist
     $query = "CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) NOT NULL,
         password TEXT NOT NULL,
-        role TEXT NOT NULL
+        role VARCHAR(50) NOT NULL
     )";
     $db->exec($query);
 } catch (PDOException $e) {
@@ -61,5 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <br>
         <input type="submit" value="Register">
     </form>
+
+    <a href="homepage.php">Back to homepage</a>
 </body>
 </html>

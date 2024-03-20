@@ -7,16 +7,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit; // Stop script execution if not an admin
 }
 
-// Path to the SQLite database file
-$dbPath = __DIR__ . '/admin.db';
+require_once 'db_connect.php'; // Include the database connection
 
-try {
-    $db = new PDO('sqlite:' . $dbPath);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-    exit;
-}
+$db = getDbConnection(); // Get the database connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
@@ -63,5 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <br>
         <input type="submit" value="Register">
     </form>
+
+    <a href="homepage.php">Back to homepage</a>
 </body>
 </html>

@@ -125,7 +125,7 @@ function submitForm() {
         content: `-----\nNew Purchase!\nMinecraft Username: ${minecraftUsername}\nDiscord Username: ${discordUsername}\nCoords: ${itemCoordsLocation}\nPlanet: ${itemPlanetLocation}\nPrice: ${priceToPay} Diamonds\nItems: ${itemsField}\nAdditional Information: ${additionalInformation}`
     };
 
-    var webhookUrl = 'https://discord.com/api/webhooks/1117130766413996103/WU74ngWkKCejLJDO5VciiYzjAS8QXxUTeONukPl-K53Ed5X8U6Zsbu7nvkBtqKOOPFu0'; // Add discord webhook link here
+    var webhookUrl = 'WEBHOOKURL'; // Add discord webhook link here
     var request = new XMLHttpRequest();
     request.open('POST', webhookUrl);
     request.setRequestHeader('Content-type', 'application/json');

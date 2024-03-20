@@ -1,8 +1,9 @@
 <?php
-// Assuming your SQLite database is in admin/items_database.db
-$dbPath = __DIR__ . '/admin/items_database.db';
-$db = new PDO('sqlite:' . $dbPath);
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// Include the database connection file
+require_once 'admin/db_connect.php';
+
+// Get the database connection from the db_connect.php file
+$db = getDbConnection();
 
 // Prepare and execute the query with ORDER BY order_num
 $query = $db->prepare("SELECT * FROM items ORDER BY order_num ASC");

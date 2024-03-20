@@ -1,16 +1,8 @@
 <?php
 session_start(); // Start a new session or resume the existing one
+require_once 'db_connect.php'; // Include the database connection
 
-// Path to the SQLite database file
-$dbPath = __DIR__ . '/admin.db';
-
-try {
-    $db = new PDO('sqlite:' . $dbPath);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-    exit;
-}
+$db = getDbConnection(); // Get the database connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
