@@ -16,6 +16,10 @@
 
 ## Versions
 
+## V4.1
+
+* Added notification-edit.php to edit the notification at the top of the screen
+
 ## V4
 
 * PostgreSQL

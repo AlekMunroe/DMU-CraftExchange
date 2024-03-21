@@ -27,9 +27,9 @@
         <h1>Welcome to the CraftExchange!</h1>
 
         <div class="notifications">
-            <p>We're Back For DM Update 69!</p>
-            <p>Stay tuned!</p>
+        <!-- Notifications will be dynamically inserted here -->
         </div>
+
 
         <div class="grid" id="item-grid">
             <!-- Item elements will be generated here -->

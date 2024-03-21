@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }).catch(error => {
         console.error('Error fetching items:', error);
     });
+    fetchNotification().catch(error => { // Ensure this line is being executed
+        console.error('Error fetching notification:', error);
+    });
 });
 
 async function fetchItemsData() {
@@ -13,6 +16,19 @@ async function fetchItemsData() {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
+}
+
+async function fetchNotification() {
+    const response = await fetch('getNotification.php'); // Adjust path as necessary
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.enabled) {
+        document.querySelector('.notifications').innerHTML = `<p>${data.notification_text}</p>`;
+    } else {
+        document.querySelector('.notifications').style.display = 'none';
+    }
 }
 
 function setupEventListeners() {

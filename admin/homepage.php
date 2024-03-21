@@ -34,6 +34,10 @@ if (isset($_POST['logout'])) {
     <form action="/admin/database.php" method="get">
         <button type="submit">Manage Items</button>
     </form>
+
+    <form action="/admin/notification-edit.php" method="get">
+        <button type="submit">Edit Notification</button>
+    </form>
     
     <?php if ($_SESSION['role'] === 'admin'): ?>
         <!-- Buttons visible only for admin -->
