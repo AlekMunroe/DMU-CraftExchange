@@ -11,3 +11,25 @@
 * Delete URL/admin/register.php so others cannot sign up as an admin
 * Go to URL/admin/admin-register.php to create employee accounts
 * Go to /admin/database.php to create and edit the database
+
+
+
+## Versions
+
+## V4
+
+* PostgreSQL
+* Fixed bug: Item limit not working
+
+## V3
+
+* PostgreSQL database
+
+## V2
+
+* SQLite database
+
+## V1
+
+* Simple HTML
+* Javascript database

@@ -43,7 +43,7 @@ function generateItemElements(items) {
         }
 
         const stockAmountHTML = item.showstockamount ? `<p class="stock-amount" style="color: red;">Only ${item.stockamount} Left in Stock!</p>` : '';
-        const instockHTML = item.instock ? `<input type="number" min="0" max="${item.limit}" value="0" class="quantity-input" data-item-name="${item.name}">` : '<p>Out of Stock</p>';
+        const instockHTML = item.instock ? `<input type="number" min="0" max="${item.item_limit}" value="0" class="quantity-input" data-item-name="${item.name}">` : '<p>Out of Stock</p>';
 
         itemElement.innerHTML = `
             <img src="${item.image}" alt="${item.name}">
@@ -65,6 +65,7 @@ function generateItemElements(items) {
     updateBasket(items);
 }
 
+
 function toggleBasket() {
     const basket = document.getElementById('basket');
     const overlay = document.querySelector('.overlay');
@@ -76,7 +77,7 @@ function toggleBasket() {
 function updateBasket(items) {
     const basketItemsElement = document.getElementById('basket-items');
     const basketTotalElement = document.getElementById('basket-total');
-    let totalPrice = 0;
+    let totalPriceByCurrency = {}; // Object to store total price by currency
     let itemDetails = []; // Array to store details of items for the itemsField
 
     basketItemsElement.innerHTML = ''; // Clear existing basket items
@@ -91,26 +92,35 @@ function updateBasket(items) {
             listItem.textContent = `${item.name} x ${quantity}`;
             basketItemsElement.appendChild(listItem);
 
-            totalPrice += item.price * quantity;
+            // Update total price by currency
+            if (!totalPriceByCurrency[item.currency]) {
+                totalPriceByCurrency[item.currency] = 0;
+            }
+            totalPriceByCurrency[item.currency] += item.price * quantity;
             itemDetails.push(`${item.name} (${quantity})`); // Add item detail for itemsField
         }
     });
 
-    basketTotalElement.textContent = `Total Price: ${totalPrice} Diamonds`;
+    // Generate a string representing the total price in each currency
+    let totalPriceString = Object.entries(totalPriceByCurrency)
+        .map(([currency, total]) => `${total} ${currency}`)
+        .join(', ');
+
+    basketTotalElement.textContent = `Total Price: ${totalPriceString}`;
 
     // Update the priceToPayInput and itemsField to reflect changes
     const priceToPayInput = document.getElementById('price-to-pay');
     const itemsField = document.getElementById('basket-items-field');
 
     if (priceToPayInput) {
-        //priceToPayInput.value = totalPrice; // Assuming you want to display the total price
-        priceToPayInput.value = `${totalPrice} Diamonds`;
+        priceToPayInput.value = totalPriceString; // Update to use the string with all currencies
     }
 
     if (itemsField) {
         itemsField.value = itemDetails.join(', '); // Comma-separated list of items and their quantities
     }
 }
+
 
 function submitForm() {
     var minecraftUsername = document.getElementById('minecraft-username').value;
@@ -119,10 +129,10 @@ function submitForm() {
     var itemPlanetLocation = document.getElementById('item-planet-location').value;
     var priceToPay = document.getElementById('price-to-pay').value;
     var additionalInformation = document.getElementById('additional-information').value;
-    var itemsField = document.getElementById('basket-items').textContent;
+    var itemsField = document.getElementById('basket-items-field').value; // Use .value of basket-items-field instead
 
     var payload = {
-        content: `-----\nNew Purchase!\nMinecraft Username: ${minecraftUsername}\nDiscord Username: ${discordUsername}\nCoords: ${itemCoordsLocation}\nPlanet: ${itemPlanetLocation}\nPrice: ${priceToPay} Diamonds\nItems: ${itemsField}\nAdditional Information: ${additionalInformation}`
+        content: `-----\nNew Purchase!\nMinecraft Username: ${minecraftUsername}\nDiscord Username: ${discordUsername}\nCoords: ${itemCoordsLocation}\nPlanet: ${itemPlanetLocation}\nPrice: ${priceToPay}\nItems: ${itemsField}\nAdditional Information: ${additionalInformation}`
     };
 
     var webhookUrl = 'WEBHOOKURL'; // Add discord webhook link here
@@ -133,3 +143,4 @@ function submitForm() {
 
     alert('Purchase Successful!');
 }
+
